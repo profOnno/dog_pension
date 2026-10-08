@@ -1,31 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <record id="view_dog_pension_dog_tree" model="ir.ui.view">
-        <field name="name">dog.pension.dog.tree</field>
+    <!-- ============================================================= -->
+    <!-- LIST VIEW                                                      -->
+    <!-- ============================================================= -->
+    <record id="view_dog_pension_dog_list" model="ir.ui.view">
+        <field name="name">dog.pension.dog.list</field>
         <field name="model">dog.pension.dog</field>
         <field name="arch" type="xml">
-	    <list string="Dogs" decoration-info="not is_boarding">
-		<field name="name"/>
-		<field name="owner_id"/>
-	    	<field name="breed_id"/>
-		<field name="gender"/>
-		<field name="age"/>
-		<field name="weight"/>
-		<field name="is_boarding" invisible="1"/>
-		<field name="stay_count"/>
-	    </list>
-	</field>
+            <list string="Dogs"
+                  decoration-success="is_boarding"
+                  decoration-muted="not is_boarding and not active">
+                <field name="image_128" widget="image"
+                       options="{'size': [40, 40]}"/>
+                <field name="name"/>
+                <field name="owner_id"/>
+                <field name="breed_id"/>
+                <field name="gender"/>
+                <field name="age"/>
+                <field name="weight"/>
+                <field name="is_boarding" invisible="1"/>
+                <field name="active" invisible="1"/>
+                <field name="stay_count"/>
+            </list>
+        </field>
     </record>
 
+    <!-- ============================================================= -->
+    <!-- KANBAN VIEW                                                    -->
+    <!-- ============================================================= -->
+    <record id="view_dog_pension_dog_kanban" model="ir.ui.view">
+        <field name="name">dog.pension.dog.kanban</field>
+        <field name="model">dog.pension.dog</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile">
+                <field name="name"/>
+                <field name="owner_id"/>
+                <field name="breed_id"/>
+                <field name="gender"/>
+                <field name="age"/>
+                <field name="is_boarding"/>
+                <field name="current_kennel_id"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <div class="o_kanban_image">
+                                <img t-att-src="kanban_image('dog.pension.dog', 'image_128', record.id.raw_value)"
+                                     alt="Dog"
+                                     class="o_image_64_cover"/>
+                            </div>
+                            <div class="oe_kanban_details">
+                                <strong><field name="name"/></strong>
+                                <div><field name="owner_id"/></div>
+                                <div t-if="record.breed_id.raw_value">
+                                    <field name="breed_id"/>
+                                </div>
+                                <div t-if="record.is_boarding.raw_value"
+                                     class="text-success">
+                                    <i class="fa fa-home"/>
+                                    <field name="current_kennel_id"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ============================================================= -->
+    <!-- FORM VIEW                                                      -->
+    <!-- ============================================================= -->
     <record id="view_dog_pension_dog_form" model="ir.ui.view">
         <field name="name">dog.pension.dog.form</field>
         <field name="model">dog.pension.dog</field>
         <field name="arch" type="xml">
             <form string="Dog">
                 <sheet>
-                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger"
-                            invisible="active"/>
+                    <widget name="web_ribbon" title="Archived"
+                            bg_color="text-bg-danger" invisible="active"/>
+                    <field name="image_1920" widget="image" class="oe_avatar"
+                           options="{'preview_image': 'image_128'}"/>
                     <div class="oe_title">
                         <h1><field name="name" placeholder="Dog Name"/></h1>
                     </div>
@@ -47,6 +102,16 @@
                             <field name="color" widget="color_picker"/>
                         </group>
                     </group>
+                    <group string="Current Location" invisible="not is_boarding">
+                        <group>
+                            <field name="current_kennel_id"/>
+                            <field name="current_hallway_id"/>
+                        </group>
+                        <group>
+                            <field name="current_room_id"/>
+                            <field name="is_boarding" invisible="1"/>
+                        </group>
+                    </group>
                     <notebook>
                         <page string="Notes">
                             <field name="notes" placeholder="Additional information..."/>
@@ -60,8 +125,8 @@
                                     <field name="duration_days"/>
                                     <field name="state" widget="badge"
                                            decoration-info="state == 'draft'"
-                                           decoration-success="state in ('confirmed','in_progress')"
-                                           decoration-muted="state in ('done','cancelled')"/>
+                                           decoration-success="state in ('confirmed', 'in_progress')"
+                                           decoration-muted="state in ('done', 'cancelled')"/>
                                     <field name="sale_order_id"/>
                                 </list>
                             </field>
@@ -73,6 +138,9 @@
         </field>
     </record>
 
+    <!-- ============================================================= -->
+    <!-- SEARCH VIEW                                                    -->
+    <!-- ============================================================= -->
     <record id="view_dog_pension_dog_search" model="ir.ui.view">
         <field name="name">dog.pension.dog.search</field>
         <field name="model">dog.pension.dog</field>
@@ -81,17 +149,33 @@
                 <field name="name"/>
                 <field name="owner_id"/>
                 <field name="breed_id"/>
-                <filter name="inactive" string="Archived" domain="[('active', '=', False)]"/>
+                <field name="current_kennel_id"/>
+                <filter name="boarding" string="Currently Boarding"
+                        domain="[('is_boarding', '=', True)]"/>
+                <filter name="not_boarding" string="Not Boarding"
+                        domain="[('is_boarding', '=', False)]"/>
+                <separator/>
+                <filter name="inactive" string="Archived"
+                        domain="[('active', '=', False)]"/>
                 <group>
-                    <filter name="group_owner" string="Owner" context="{'group_by': 'owner_id'}"/>
-                    <filter name="group_breed" string="Breed" context="{'group_by': 'breed_id'}"/>
+                    <filter name="group_owner" string="Owner"
+                            context="{'group_by': 'owner_id'}"/>
+                    <filter name="group_breed" string="Breed"
+                            context="{'group_by': 'breed_id'}"/>
+                    <filter name="group_gender" string="Gender"
+                            context="{'group_by': 'gender'}"/>
+                    <filter name="group_kennel" string="Current Kennel"
+                            context="{'group_by': 'current_kennel_id'}"/>
                 </group>
             </search>
         </field>
     </record>
 
-    <record id="view_dog_pension_breed_tree" model="ir.ui.view">
-        <field name="name">dog.pension.breed.tree</field>
+    <!-- ============================================================= -->
+    <!-- BREED VIEWS                                                    -->
+    <!-- ============================================================= -->
+    <record id="view_dog_pension_breed_list" model="ir.ui.view">
+        <field name="name">dog.pension.breed.list</field>
         <field name="model">dog.pension.breed</field>
         <field name="arch" type="xml">
             <list editable="bottom">
@@ -99,6 +183,42 @@
                 <field name="description"/>
             </list>
         </field>
+    </record>
+
+    <record id="view_dog_pension_breed_form" model="ir.ui.view">
+        <field name="name">dog.pension.breed.form</field>
+        <field name="model">dog.pension.breed</field>
+        <field name="arch" type="xml">
+            <form string="Breed">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Breed name"/></h1>
+                    </div>
+                    <group>
+                        <field name="description" placeholder="Description..."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================= -->
+    <!-- ACTIONS                                                        -->
+    <!-- ============================================================= -->
+    <record id="action_dog_pension_dog" model="ir.actions.act_window">
+        <field name="name">Dogs</field>
+        <field name="res_model">dog.pension.dog</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_dog_pension_dog_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Add your first dog</p>
+        </field>
+    </record>
+
+    <record id="action_dog_pension_breed" model="ir.actions.act_window">
+        <field name="name">Breeds</field>
+        <field name="res_model">dog.pension.breed</field>
+        <field name="view_mode">list,form</field>
     </record>
 
 </odoo>

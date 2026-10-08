@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="report_kennel_card_document">
+        <t t-call="web.basic_layout">
+            <t t-foreach="docs" t-as="stay">
+                <div class="page" style="page-break-after: always;">
+                    <div class="row">
+                        <div class="col-5 text-center">
+                            <img t-if="stay.dog_id.qr_code"
+                                 t-att-src="image_data_uri(stay.dog_id.qr_code)"
+                                 style="width: 100%; max-width: 90px;"/>
+                        </div>
+                        <div class="col-7">
+                            <h3 style="margin: 0;">
+                                <t t-esc="stay.dog_id.name"/>
+                            </h3>
+                            <p style="margin: 0;">
+                                <t t-esc="stay.dog_id.breed_id.name or ''"/>
+                            </p>
+                            <p t-if="stay.dog_id.color" style="margin: 0;">
+                                <strong>Color:</strong>
+                                <t t-esc="stay.dog_id.color"/>
+                            </p>
+                        </div>
+                    </div>
+                    <hr style="margin: 5px 0;"/>
+                    <div>
+                        <strong>Owner:</strong>
+                        <t t-esc="stay.owner_id.name"/>
+                    </div>
+                    <div>
+                        <strong>Tel:</strong>
+                        <t t-esc="stay.owner_id.phone or ''"/>
+                    </div>
+                    <hr style="margin: 5px 0;"/>
+                    <div>
+                        <strong>Diet:</strong>
+                        <t t-esc="stay.special_needs or 'None'"/>
+                    </div>
+                    <div>
+                        <strong>Medication:</strong>
+                        <t t-esc="stay.medication or 'None'"/>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_kennel_card">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="stay">
+                <t t-call="dog_pension.report_kennel_card_document"/>
+            </t>
+        </t>
+    </template>
+
+</odoo>

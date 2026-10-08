@@ -208,6 +208,7 @@ class DogPensionStayKennel(models.Model):
             body += "<br/><i>Reason:</i> %s" % reason
         self.dog_id.message_post(body=body, subtype_xmlid='mail.mt_note')
 
+
     # ------------------------------------------------------------------
     # Create — close overlapping assignment in the same stay BEFORE
     # validation, so a move is not blocked.

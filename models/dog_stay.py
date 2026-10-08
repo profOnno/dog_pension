@@ -184,7 +184,7 @@ class DogPensionStay(models.Model):
             location = kennel.name if kennel else "no kennel assigned yet"
             stay.dog_id.message_post(
                 body=(
-                    "<b>Checked in</b> at the pension. "
+                    "<strong>Checked in</strong> at the pension. "
                     "Current location: %s" % location
                 ),
                 subtype_xmlid='mail.mt_note',
@@ -198,7 +198,7 @@ class DogPensionStay(models.Model):
                     stay.sale_order_line_id.product_uom_qty
                 )
             stay.dog_id.message_post(
-                body="<b>Checked out</b> — stay finished.",
+                body="<strong>Checked out</strong> — stay finished.",
                 subtype_xmlid='mail.mt_note',
             )
 

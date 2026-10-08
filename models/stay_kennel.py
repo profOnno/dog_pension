@@ -198,14 +198,14 @@ class DogPensionStayKennel(models.Model):
             return
         old_label = old_kennel.name if old_kennel else "—"
         new_label = new_kennel.name if new_kennel else "—"
-        body = "<b>Kennel change:</b> %s → %s" % (old_label, new_label)
+        body = "<strong>Kennel change:</strong> %s → %s" % (old_label, new_label)
         if self.start_date and self.end_date:
             body += " (%s → %s)" % (
                 self.start_date.strftime('%Y-%m-%d %H:%M'),
                 self.end_date.strftime('%Y-%m-%d %H:%M'),
             )
         if reason:
-            body += "<br/><i>Reason:</i> %s" % reason
+            body += "<br/><em>Reason:</em> %s" % reason
         self.dog_id.message_post(body=body, subtype_xmlid='mail.mt_note')
 
 
@@ -345,7 +345,7 @@ class DogPensionStayKennel(models.Model):
             if rec.dog_id:
                 rec.dog_id.message_post(
                     body=(
-                        "<b>Kennel assignment removed:</b> %s "
+                        "<strong>Kennel assignment removed:</strong> %s "
                         "(was %s → %s)"
                         % (
                             rec.kennel_id.name,

@@ -1,5 +1,9 @@
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
+import base64
+from io import BytesIO
+
+import qrcode
 
 
 class DogPensionKennel(models.Model):
@@ -18,6 +22,13 @@ class DogPensionKennel(models.Model):
         tracking=True,
         help="The label visible on the kennel door, e.g. 'A-01'.",
     )
+
+    qr_code = fields.Binary(
+        string="QR Code",
+        compute='_compute_qr_code',
+        store=True,
+    )
+
     sequence = fields.Integer(
         string="Position",
         default=10,
@@ -145,6 +156,34 @@ class DogPensionKennel(models.Model):
     # ------------------------------------------------------------------
     # Compute
     # ------------------------------------------------------------------
+
+    @api.depends('name')
+    def _compute_qr_code(self):
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        for kennel in self:
+            if not kennel.id or not base_url:
+                kennel.qr_code = False
+                continue
+            url = "%s/web#id=%d&model=dog.pension.kennel&view_type=form" % (
+                base_url, kennel.id
+            )
+            kennel.qr_code = kennel._generate_qr(url)
+
+    @api.model
+    def _generate_qr(self, data, size=4):
+        """Generate a QR code PNG and return it as base64."""
+        qr = qrcode.QRCode(
+            version=None,
+            error_correction=qrcode.constants.ERROR_CORRECT_M,
+            box_size=size,
+            border=2,
+        )
+        qr.add_data(data)
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="black", back_color="white")
+        buffer = BytesIO()
+        img.save(buffer, format='PNG')
+        return base64.b64encode(buffer.getvalue())
 
     @api.depends(
         'stay_kennel_ids.start_date',

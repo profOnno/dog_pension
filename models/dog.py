@@ -1,4 +1,8 @@
 from odoo import api, fields, models
+import base64
+from io import BytesIO
+
+import qrcode
 
 
 class DogPensionDog(models.Model):
@@ -12,6 +16,11 @@ class DogPensionDog(models.Model):
     # ------------------------------------------------------------------
 
     name = fields.Char(string="Dog Name", required=True, tracking=True)
+    qr_code = fields.Binary(
+        string="QR Code",
+        compute='_compute_qr_code',
+        store=True,
+    )
     owner_id = fields.Many2one(
         'res.partner',
         string="Owner",
@@ -109,6 +118,34 @@ class DogPensionDog(models.Model):
     # ------------------------------------------------------------------
     # Compute methods
     # ------------------------------------------------------------------
+
+    api.depends('name')
+    def _compute_qr_code(self):
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        for dog in self:
+            if not dog.id or not base_url:
+                dog.qr_code = False
+                continue
+            url = "%s/web#id=%d&model=dog.pension.dog&view_type=form" % (
+                base_url, dog.id
+            )
+            dog.qr_code = self._generate_qr(url)
+
+    @api.model
+    def _generate_qr(self, data, size=4):
+        """Generate a QR code PNG and return it as base64."""
+        qr = qrcode.QRCode(
+            version=None,
+            error_correction=qrcode.constants.ERROR_CORRECT_M,
+            box_size=size,
+            border=2,
+        )
+        qr.add_data(data)
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="black", back_color="white")
+        buffer = BytesIO()
+        img.save(buffer, format='PNG')
+        return base64.b64encode(buffer.getvalue())
 
     @api.depends('birth_date')
     def _compute_age(self):

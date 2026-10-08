@@ -131,6 +131,12 @@
                                 </list>
                             </field>
                         </page>
+                        <page string="QR Code">
+                            <group>
+                                <field name="qr_code" widget="image"
+                                      options="{'size': [200, 200]}"/>
+                            </group>
+                        </page>
                     </notebook>
                 </sheet>
                 <chatter/>

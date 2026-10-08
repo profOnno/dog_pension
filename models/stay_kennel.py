@@ -112,6 +112,37 @@ class DogPensionStayKennel(models.Model):
                 old = old_data.get(rec.id)
                 if old != rec.kennel_id:
                     rec._log_transition(old, rec.kennel_id, rec.notes)
+            # Close any assignment that overlaps the start of the new one
+            overlapping = self.search([
+                ('id', '!=', rec.id),
+                ('stay_id', '=', rec.stay_id.id),
+                ('start_date', '<', rec.start_date),
+                ('end_date', '>', rec.start_date),
+            ])
+            for old in overlapping:
+                old.end_date = rec.start_date
+            # Log the transition on the dog's chatter
+            rec._log_transition(
+                old_kennel=overlapping[:1].kennel_id,
+                new_kennel=rec.kennel_id,
+                reason=rec.notes,
+            )
+        return records
+
+    @api.model
+    def default_get(self, fields_list):
+        """Prefill dates when creating a new kennel assignment.
+
+        - start_date: now
+        - end_date: the end_date of the related stay
+        """
+        res = super().default_get(fields_list)
+        stay_id = self.env.context.get('default_stay_id')
+        if stay_id:
+            stay = self.env['dog.pension.stay'].browse(stay_id)
+            res['start_date'] = fields.Datetime.now()
+            if stay.end_date:
+                res['end_date'] = stay.end_date
         return res
 
     @api.depends('start_date', 'end_date')

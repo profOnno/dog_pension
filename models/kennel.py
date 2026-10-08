@@ -80,13 +80,13 @@ class DogPensionKennel(models.Model):
     current_occupancy = fields.Integer(
         string="Occupancy",
         compute='_compute_occupancy',
-        store=False,
+        store=True,
     )
     occupancy_state = fields.Selection([
         ('empty', 'Empty'),
         ('partial', 'Partial'),
         ('full', 'Full'),
-    ], string="Occupancy", compute='_compute_occupancy', store=False)
+    ], string="Occupancy", compute='_compute_occupancy', store=True)
 
     # ------------------------------------------------------------------
     # Company
@@ -146,6 +146,7 @@ class DogPensionKennel(models.Model):
         'stay_kennel_ids.end_date',
         'stay_kennel_ids.stay_id',
         'stay_kennel_ids.stay_id.dog_id',
+        'stay_kennel_ids.kennel_id',
         'capacity',
     )
     def _compute_occupancy(self):

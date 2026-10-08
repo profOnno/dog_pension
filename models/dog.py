@@ -145,7 +145,7 @@ class DogPensionDog(models.Model):
             'view_id': self.env.ref(
                 'dog_pension.view_dog_pension_dog_photo_fullscreen'
             ).id,
-            'target': 'fullscreen',
+            'target': 'new',
         }
 
     @api.model

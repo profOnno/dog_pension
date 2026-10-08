@@ -80,7 +80,7 @@
                     <widget name="web_ribbon" title="Archived"
                             bg_color="text-bg-danger" invisible="active"/>
                     <field name="image_1920" widget="image" class="oe_avatar"
-                           options="{'preview_image': 'image_128'}"/>
+                           options="{'preview_image': 'image_128', 'zoom': True}"/>
                     <div class="oe_title">
                         <h1><field name="name" placeholder="Dog Name"/></h1>
                     </div>

@@ -179,7 +179,7 @@ class DogPensionStayKennel(models.Model):
 
         return records
 
-   def write(self, vals):
+    def write(self, vals):
         old_data = {}
         if 'kennel_id' in vals:
             for rec in self:

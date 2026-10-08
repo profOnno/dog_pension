@@ -86,13 +86,7 @@
                     </group>
 
                     <notebook>
-                        <page string="QR Code">
-                            <group>
-                                <field name="qr_code" widget="image"
-                                      options="{'size': [200, 200]}"/>
-                            </group>
-                        </page>
-                        <page string="Notes">
+                       <page string="Notes">
                             <field name="notes" placeholder="Additional information..."/>
                         </page>
                         <page string="Stays">
@@ -110,6 +104,13 @@
                                 </list>
                             </field>
                         </page>
+                        <page string="QR Code">
+                            <group>
+                                <field name="qr_code" widget="image"
+                                      options="{'size': [200, 200]}"/>
+                            </group>
+                        </page>
+ 
                     </notebook>
                 </sheet>
                 <chatter/>

@@ -1,39 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <template id="report_kennel_card_document">
-        <t t-call="web.basic_layout">
+    <template id="report_kennel_card">
+        <t t-call="web.html_container">
+            <style>
+                .kennel-card {
+                    font-family: 'DejaVu Sans', Arial, Helvetica, sans-serif;
+                    font-size: 10px;
+                    color: #000;
+                }
+                .kennel-card h2 {
+                    font-size: 18px;
+                    margin: 0 0 2mm 0;
+                    font-weight: bold;
+                }
+                .kennel-card hr {
+                    border: 0;
+                    border-top: 1px solid #000;
+                    margin: 3mm 0;
+                }
+                .kennel-card strong {
+                    font-weight: bold;
+                }
+                .kennel-card table {
+                    width: 100%;
+                    border-collapse: collapse;
+                }
+                .kennel-card td {
+                    vertical-align: top;
+                }
+                .kennel-card .qr-cell {
+                    width: 32mm;
+                    text-align: right;
+                }
+                .kennel-card .qr-cell img {
+                    width: 30mm;
+                    height: 30mm;
+                }
+                .kennel-card .info-cell {
+                    padding-right: 3mm;
+                }
+            </style>
             <t t-foreach="docs" t-as="stay">
-                <div class="page" style="page-break-after: always;">
-                    <div class="row">
-                        <div class="col-5 text-center">
-                            <img t-if="stay.dog_id.qr_code"
-                                 t-att-src="image_data_uri(stay.dog_id.qr_code)"
-                                 style="width: 100%; max-width: 90px;"/>
-                        </div>
-                        <div class="col-7">
-                            <h3 style="margin: 0;">
-                                <t t-esc="stay.dog_id.name"/>
-                            </h3>
-                            <p style="margin: 0;">
-                                <t t-esc="stay.dog_id.breed_id.name or ''"/>
-                            </p>
-                            <p t-if="stay.dog_id.color" style="margin: 0;">
-                                <strong>Color:</strong>
-                                <t t-esc="stay.dog_id.color"/>
-                            </p>
-                        </div>
-                    </div>
-                    <hr style="margin: 5px 0;"/>
+                <div class="kennel-card"
+                     style="width: 105mm; height: 148mm; padding: 5mm; box-sizing: border-box;">
+                    <table>
+                        <tr>
+                            <td class="info-cell">
+                                <h2><t t-esc="stay.dog_id.name"/></h2>
+                                <div>
+                                    <t t-esc="stay.dog_id.breed_id.name or ''"/>
+                                </div>
+                                <div t-if="stay.dog_id.color">
+                                    <strong>Color:</strong>
+                                    <t t-esc="stay.dog_id.color"/>
+                                </div>
+                            </td>
+                            <td class="qr-cell">
+                                <img t-if="stay.dog_id.qr_code"
+                                     t-att-src="image_data_uri(stay.dog_id.qr_code)"/>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <hr/>
+
                     <div>
                         <strong>Owner:</strong>
                         <t t-esc="stay.owner_id.name"/>
                     </div>
                     <div>
                         <strong>Tel:</strong>
-                        <t t-esc="stay.owner_id.phone or ''"/>
+                        <t t-esc="stay.owner_id.phone or stay.owner_id.mobile or '—'"/>
                     </div>
-                    <hr style="margin: 5px 0;"/>
+
+                    <hr/>
+
                     <div>
                         <strong>Diet:</strong>
                         <t t-esc="stay.special_needs or 'None'"/>
@@ -43,14 +85,6 @@
                         <t t-esc="stay.medication or 'None'"/>
                     </div>
                 </div>
-            </t>
-        </t>
-    </template>
-
-    <template id="report_kennel_card">
-        <t t-call="web.html_container">
-            <t t-foreach="docs" t-as="stay">
-                <t t-call="dog_pension.report_kennel_card_document"/>
             </t>
         </t>
     </template>

@@ -29,22 +29,20 @@
                 .kennel-card td {
                     vertical-align: top;
                 }
+                .kennel-card .info-cell {
+                    padding-right: 2mm;
+                }
                 .kennel-card .qr-cell {
                     width: 28mm;
                     text-align: right;
-                    padding-right: 1mm;
                 }
                 .kennel-card .qr-cell img {
                     width: 26mm;
                     height: 26mm;
                 }
-                .kennel-card .info-cell {
-                    padding-right: 2mm;
-                }
             </style>
             <t t-foreach="docs" t-as="stay">
-                <div class="kennel-card"
-                     style="width: 105mm; height: 148mm; padding: 2mm; box-sizing: border-box;">
+                <div class="kennel-card">
                     <table>
                         <tr>
                             <td class="info-cell">

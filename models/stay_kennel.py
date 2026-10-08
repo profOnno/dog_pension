@@ -1,4 +1,5 @@
 from odoo import api, fields, models
+from markupsafe import Markup
 from odoo.exceptions import ValidationError
 
 
@@ -198,16 +199,15 @@ class DogPensionStayKennel(models.Model):
             return
         old_label = old_kennel.name if old_kennel else "—"
         new_label = new_kennel.name if new_kennel else "—"
-        body = "<strong>Kennel change:</strong> %s → %s" % (old_label, new_label)
-        if self.start_date and self.end_date:
-            body += " (%s → %s)" % (
-                self.start_date.strftime('%Y-%m-%d %H:%M'),
-                self.end_date.strftime('%Y-%m-%d %H:%M'),
-            )
-        if reason:
-            body += "<br/><em>Reason:</em> %s" % reason
-        self.dog_id.message_post(body=body, subtype_xmlid='mail.mt_note')
 
+        body = Markup("<strong>Kennel change:</strong> %s → %s") % (old_label, new_label)
+
+        if self.start_date:
+            body += Markup(" (on %s)") % self.start_date.strftime('%Y-%m-%d %H:%M')
+        if reason:
+            body += Markup("<br/><em>Reason:</em> %s") % reason
+
+        self.dog_id.message_post(body=body, subtype_xmlid='mail.mt_note')
 
     # ------------------------------------------------------------------
     # Create — close overlapping assignment in the same stay BEFORE

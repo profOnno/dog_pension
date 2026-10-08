@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_kennel_list" model="ir.ui.view">
+        <field name="name">dog.pension.kennel.list</field>
+        <field name="model">dog.pension.kennel</field>
+        <field name="arch" type="xml">
+            <list string="Kennels"
+                  decoration-success="state == 'available'"
+                  decoration-danger="state == 'occupied'"
+                  decoration-warning="state in ('maintenance', 'blocked')">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="hallway_id"/>
+                <field name="room_id" optional="hide"/>
+                <field name="size"/>
+                <field name="state" widget="badge"/>
+                <field name="current_dog_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_kennel_form" model="ir.ui.view">
+        <field name="name">dog.pension.kennel.form</field>
+        <field name="model">dog.pension.kennel</field>
+        <field name="arch" type="xml">
+            <form string="Kennel">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived"
+                            bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Label, e.g. A-01"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="hallway_id"/>
+                            <field name="room_id"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="size"/>
+                            <field name="state"/>
+                            <field name="has_outdoor_access"/>
+                            <field name="has_heating"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                    <group string="Current Occupant">
+                        <field name="current_stay_id"/>
+                        <field name="current_dog_id"/>
+                    </group>
+                    <notebook>
+                        <page string="Assignment History">
+                            <field name="stay_kennel_ids" readonly="1">
+                                <list>
+                                    <field name="stay_id"/>
+                                    <field name="dog_id"/>
+                                    <field name="start_date"/>
+                                    <field name="end_date"/>
+                                    <field name="duration_days"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_kennel_search" model="ir.ui.view">
+        <field name="name">dog.pension.kennel.search</field>
+        <field name="model">dog.pension.kennel</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="hallway_id"/>
+                <field name="room_id"/>
+                <filter name="available" string="Available"
+                        domain="[('state', '=', 'available')]"/>
+                <filter name="occupied" string="Occupied"
+                        domain="[('state', '=', 'occupied')]"/>
+                <group>
+                    <filter name="group_room" string="Room"
+                            context="{'group_by': 'room_id'}"/>
+                    <filter name="group_hallway" string="Hallway"
+                            context="{'group_by': 'hallway_id'}"/>
+                    <filter name="group_state" string="Status"
+                            context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_kennel" model="ir.actions.act_window">
+        <field name="name">Kennels</field>
+        <field name="res_model">dog.pension.kennel</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_kennel_search"/>
+    </record>
+
+</odoo>

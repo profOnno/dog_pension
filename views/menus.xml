@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ============================================= -->
+        <!-- 1. EERST de actions definiëren                 -->
+        <!-- ============================================= -->
+
+        <record id="action_dog_pension_dog" model="ir.actions.act_window">
+            <field name="name">Dogs</field>
+            <field name="res_model">dog.pension.dog</field>
+            <field name="view_mode">list,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">Create your first dog</p>
+            </field>
+        </record>
+
+        <record id="action_dog_pension_breed" model="ir.actions.act_window">
+            <field name="name">Breeds</field>
+            <field name="res_model">dog.pension.breed</field>
+            <field name="view_mode">list</field>
+        </record>
+
+        <record id="action_dog_pension_stay" model="ir.actions.act_window">
+            <field name="name">Dog Stays</field>
+            <field name="res_model">dog.pension.stay</field>
+            <field name="view_mode">list,calendar,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">Create your first dog stay</p>
+            </field>
+        </record>
+
+        <!-- ============================================= -->
+        <!-- 2. DAN de menu-structuur                       -->
+        <!-- ============================================= -->
+
+        <menuitem id="menu_dog_pension_root"
+                  name="Dog Pension"
+                  web_icon="dog_pension,static/description/icon.png"
+                  groups="dog_pension.group_dog_pension_user"
+                  sequence="85"/>
+
+        <menuitem id="menu_dog_pension_dogs"
+                  name="Dogs"
+                  parent="menu_dog_pension_root"
+                  sequence="10"/>
+
+        <menuitem id="menu_dog_pension_dog_all"
+                  name="All Dogs"
+                  parent="menu_dog_pension_dogs"
+                  action="action_dog_pension_dog"
+                  sequence="10"/>
+
+        <menuitem id="menu_dog_pension_breeds"
+                  name="Breeds"
+                  parent="menu_dog_pension_dogs"
+                  action="action_dog_pension_breed"
+                  sequence="20"/>
+
+        <menuitem id="menu_dog_pension_stays"
+                  name="Stays"
+                  parent="menu_dog_pension_root"
+                  sequence="20"/>
+
+        <menuitem id="menu_dog_pension_stay_all"
+                  name="All Stays"
+                  parent="menu_dog_pension_stays"
+                  action="action_dog_pension_stay"
+                  sequence="10"/>
+
+	<menuitem id="menu_dog_pension_accommodation"
+		  name="Accommodation"
+		  parent="menu_dog_pension_root"
+		  sequence="30"/>
+
+	<menuitem id="menu_dog_pension_rooms"
+		  name="Rooms"
+		  parent="menu_dog_pension_accommodation"
+		  action="action_room"
+		  sequence="10"/>
+
+	<menuitem id="menu_dog_pension_hallways"
+		  name="Hallways"
+		  parent="menu_dog_pension_accommodation"
+		  action="action_hallway"
+		  sequence="20"/>
+
+	<menuitem id="menu_dog_pension_kennels"
+		  name="Kennels"
+		  parent="menu_dog_pension_accommodation"
+		  action="action_kennel"
+		  sequence="30"/>
+
+    </data>
+</odoo>

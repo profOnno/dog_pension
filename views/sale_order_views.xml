@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================================= -->
+    <!-- Verkooporder: uitgebreide form view                            -->
+    <!-- ============================================================= -->
+    <record id="view_order_form_dog_pension" model="ir.ui.view">
+        <field name="name">sale.order.form.dog.pension</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Rode markering van onvolledige pension-regels (Optie 3) -->
+            <xpath expr="//field[@name='order_line']/list" position="attributes">
+                <attribute name="decoration-danger">
+                    product_id.is_dog_pension_service and (not dog_id or not stay_start_date or not stay_end_date)
+                </attribute>
+            </xpath>
+
+            <!-- Extra kolommen naast het product -->
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_id']"
+                   position="after">
+                <field name="dog_id"
+                       optional="show"
+                       invisible="not parent.is_dog_pension"/>
+		<button name="action_quick_create_dog"
+			type="object"
+			icon="fa-plus"
+			class="oe_inline"
+			title="Create a new dog"
+			invisible="not parent.is_dog_pension"/>
+                <field name="stay_start_date"
+                       optional="show"
+                       invisible="not parent.is_dog_pension"/>
+                <field name="stay_end_date"
+                       optional="show"
+                       invisible="not parent.is_dog_pension"/>
+                <field name="stay_duration_days"
+                       optional="show"
+                       invisible="not parent.is_dog_pension"/>
+            </xpath>
+
+            <!-- Tabblad met de aangemaakte verblijven -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Dog Stays" name="dog_stays"
+                      invisible="not is_dog_pension">
+                    <field name="is_dog_pension" invisible="1"/>
+                    <field name="dog_stay_ids" readonly="1">
+                        <list>
+                            <field name="name"/>
+                            <field name="dog_id"/>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="duration_days"/>
+                            <field name="state" widget="badge"
+                                   decoration-info="state == 'draft'"
+                                   decoration-warning="state == 'confirmed'"
+                                   decoration-success="state == 'in_progress'"
+                                   decoration-muted="state in ('done', 'cancelled')"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- ============================================================= -->
+    <!-- Stat-knop in de button box                                    -->
+    <!-- ============================================================= -->
+    <record id="view_order_form_dog_pension_button_box" model="ir.ui.view">
+        <field name="name">sale.order.form.dog.pension.button.box</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_view_invoice']" position="before">
+                <button type="object"
+                        name="action_view_dog_stays"
+                        class="oe_stat_button"
+                        icon="fa-paw"
+                        invisible="dog_stay_count == 0">
+                    <field name="dog_stay_count"
+                           widget="statinfo"
+                           string="Dog Stays"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ============================================================= -->
+    <!-- Productformulier: velden voor het pension-product             -->
+    <!-- ============================================================= -->
+    <record id="view_product_template_form_dog_pension" model="ir.ui.view">
+        <field name="name">product.template.form.dog.pension</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='group_general']" position="inside">
+                <field name="is_dog_pension_service"/>
+                <field name="dog_pension_daily_rate"
+                       invisible="not is_dog_pension_service"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

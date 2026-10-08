@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_partner_form_dog_pension" model="ir.ui.view">
+        <field name="name">res.partner.form.dog.pension</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Dogs" name="dogs"
+                      invisible="not is_dog_owner and not dog_ids">
+                    <field name="is_dog_owner" invisible="1"/>
+                    <field name="dog_ids">
+                        <list>
+                            <field name="name"/>
+                            <field name="breed_id"/>
+                            <field name="gender"/>
+                            <field name="age"/>
+                            <field name="weight"/>
+                        </list>
+                        <form>
+                            <sheet>
+                                <group>
+                                    <field name="name"/>
+                                    <field name="breed_id"/>
+                                    <field name="gender"/>
+                                    <field name="birth_date"/>
+                                    <field name="weight"/>
+                                </group>
+                            </sheet>
+                        </form>
+                    </field>
+                </page>
+            </xpath>
+            <xpath expr="//field[@name='category_id']" position="after">
+                <field name="is_dog_owner"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

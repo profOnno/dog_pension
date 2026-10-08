@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Categorie (blijft bestaan, maar wordt nu gekoppeld aan het privilege) -->
+        <record id="module_category_dog_pension" model="ir.module.category">
+            <field name="name">Dog Pension</field>
+            <field name="sequence">30</field>
+        </record>
+
+        <!-- Nieuw in Odoo 19: het privilege model -->
+        <record id="privilege_dog_pension" model="res.groups.privilege">
+            <field name="name">Dog Pension</field>
+            <field name="category_id" ref="module_category_dog_pension"/>
+        </record>
+
+        <!-- Gebruikersgroep: verwijst nu naar privilege_id -->
+        <record id="group_dog_pension_user" model="res.groups">
+            <field name="name">User</field>
+            <field name="privilege_id" ref="privilege_dog_pension"/>
+        </record>
+
+        <!-- Manager-groep: erft van de gebruikersgroep -->
+        <record id="group_dog_pension_manager" model="res.groups">
+            <field name="name">Manager</field>
+            <field name="privilege_id" ref="privilege_dog_pension"/>
+            <field name="implied_ids" eval="[(4, ref('group_dog_pension_user'))]"/>
+        </record>
+
+    </data>
+</odoo>

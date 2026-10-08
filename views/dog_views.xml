@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_dog_pension_dog_tree" model="ir.ui.view">
+        <field name="name">dog.pension.dog.tree</field>
+        <field name="model">dog.pension.dog</field>
+        <field name="arch" type="xml">
+	    <list string="Dogs" decoration-info="not is_boarding">
+		<field name="name"/>
+		<field name="owner_id"/>
+	    	<field name="breed_id"/>
+		<field name="gender"/>
+		<field name="age"/>
+		<field name="weight"/>
+		<field name="current_kennel_id"/>
+		<field name="current_room_id" optional="hide"/>
+		<field name="current_hallway_id" optional="hide"/>
+		<field name="is_boarding" invisible="1"/>
+		<field name="stay_count"/>
+	    </list>
+	</field>
+    </record>
+
+    <record id="view_dog_pension_dog_form" model="ir.ui.view">
+        <field name="name">dog.pension.dog.form</field>
+        <field name="model">dog.pension.dog</field>
+        <field name="arch" type="xml">
+            <form string="Dog">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger"
+                            invisible="active"/>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Dog Name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="owner_id"/>
+                            <field name="breed_id"/>
+                            <field name="gender"/>
+                            <field name="birth_date"/>
+                            <field name="age"/>
+                        </group>
+                        <group>
+                            <field name="weight"/>
+                            <field name="is_sterilized"/>
+                            <field name="vaccination_date"/>
+                            <field name="vet_name"/>
+                            <field name="vet_phone"/>
+                            <field name="active" invisible="1"/>
+                            <field name="color" widget="color_picker"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Notes">
+                            <field name="notes" placeholder="Additional information..."/>
+                        </page>
+                        <page string="Stays">
+                            <field name="stay_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="start_date"/>
+                                    <field name="end_date"/>
+                                    <field name="duration_days"/>
+                                    <field name="state" widget="badge"
+                                           decoration-info="state == 'draft'"
+                                           decoration-success="state in ('confirmed','in_progress')"
+                                           decoration-muted="state in ('done','cancelled')"/>
+                                    <field name="sale_order_id"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_dog_pension_dog_search" model="ir.ui.view">
+        <field name="name">dog.pension.dog.search</field>
+        <field name="model">dog.pension.dog</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="owner_id"/>
+                <field name="breed_id"/>
+                <filter name="inactive" string="Archived" domain="[('active', '=', False)]"/>
+                <group>
+                    <filter name="group_owner" string="Owner" context="{'group_by': 'owner_id'}"/>
+                    <filter name="group_breed" string="Breed" context="{'group_by': 'breed_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_dog_pension_breed_tree" model="ir.ui.view">
+        <field name="name">dog.pension.breed.tree</field>
+        <field name="model">dog.pension.breed</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="name"/>
+                <field name="description"/>
+            </list>
+        </field>
+    </record>
+
+</odoo>

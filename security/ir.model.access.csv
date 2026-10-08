@@ -1,0 +1,16 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_dog_pension_dog_user,dog.pension.dog.user,model_dog_pension_dog,group_dog_pension_user,1,1,1,0
+access_dog_pension_dog_manager,dog.pension.dog.manager,model_dog_pension_dog,group_dog_pension_manager,1,1,1,1
+access_dog_pension_breed_user,dog.pension.breed.user,model_dog_pension_breed,group_dog_pension_user,1,1,1,0
+access_dog_pension_breed_manager,dog.pension.breed.manager,model_dog_pension_breed,group_dog_pension_manager,1,1,1,1
+access_dog_pension_stay_user,dog.pension.stay.user,model_dog_pension_stay,group_dog_pension_user,1,1,1,0
+access_dog_pension_stay_manager,dog.pension.stay.manager,model_dog_pension_stay,group_dog_pension_manager,1,1,1,1
+access_dog_quick_create,dog.pension.dog.quick.create,model_dog_pension_dog_quick_create,group_dog_pension_user,1,1,1,1
+access_dog_pension_room_user,room.user,model_dog_pension_room,group_dog_pension_user,1,1,1,0
+access_dog_pension_room_manager,room.manager,model_dog_pension_room,group_dog_pension_manager,1,1,1,1
+access_dog_pension_hallway_user,hallway.user,model_dog_pension_hallway,group_dog_pension_user,1,1,1,0
+access_dog_pension_hallway_manager,hallway.manager,model_dog_pension_hallway,group_dog_pension_manager,1,1,1,1
+access_dog_pension_kennel_user,kennel.user,model_dog_pension_kennel,group_dog_pension_user,1,1,1,0
+access_dog_pension_kennel_manager,kennel.manager,model_dog_pension_kennel,group_dog_pension_manager,1,1,1,1
+access_dog_pension_stay_kennel_user,stay.kennel.user,model_dog_pension_stay_kennel,group_dog_pension_user,1,1,1,1
+access_dog_pension_stay_kennel_manager,stay.kennel.manager,model_dog_pension_stay_kennel,group_dog_pension_manager,1,1,1,1

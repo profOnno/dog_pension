@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_hallway_list" model="ir.ui.view">
+        <field name="name">dog.pension.hallway.list</field>
+        <field name="model">dog.pension.hallway</field>
+        <field name="arch" type="xml">
+            <list string="Hallways">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="room_id"/>
+                <field name="kennel_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_hallway_form" model="ir.ui.view">
+        <field name="name">dog.pension.hallway.form</field>
+        <field name="model">dog.pension.hallway</field>
+        <field name="arch" type="xml">
+            <form string="Hallway">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived"
+                            bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Hallway name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="room_id"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="kennel_count"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Kennels">
+                            <field name="kennel_ids">
+                                <list>
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="size"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'available'"
+                                           decoration-danger="state == 'occupied'"
+                                           decoration-warning="state in ('maintenance', 'blocked')"/>
+                                    <field name="current_dog_id"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_hallway" model="ir.actions.act_window">
+        <field name="name">Hallways</field>
+        <field name="res_model">dog.pension.hallway</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

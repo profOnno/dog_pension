@@ -12,7 +12,7 @@
     'category': 'Services',
     'author': 'Your Company',
     'license': 'LGPL-3',
-    'depends': ['base', 'sale', 'product'],
+    'depends': ['base', 'sale_management', 'product'],
     'data': [
         'security/dog_pension_security.xml',
         'security/ir.model.access.csv',

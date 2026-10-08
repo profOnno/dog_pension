@@ -66,6 +66,54 @@ class DogPensionStayKennel(models.Model):
         readonly=True,
     )
 
+    @api.model
+    def default_get(self, fields_list):
+        res = super().default_get(fields_list)
+        stay_id = self.env.context.get('default_stay_id')
+        if stay_id:
+            stay = self.env['dog.pension.stay'].browse(stay_id)
+            now = fields.Datetime.now()
+            res['start_date'] = now
+            if stay.end_date:
+                res['end_date'] = stay.end_date
+        return res
+
+    def _log_transition(self, old_kennel, new_kennel, reason=None):
+        self.ensure_one()
+        if not self.dog_id or old_kennel == new_kennel:
+            return
+        old_label = old_kennel.name if old_kennel else "—"
+        new_label = new_kennel.name if new_kennel else "—"
+        body = "<b>Kennel change:</b> %s → %s" % (old_label, new_label)
+        if self.start_date and self.end_date:
+            body += " (%s → %s)" % (
+                self.start_date.strftime('%Y-%m-%d %H:%M'),
+                self.end_date.strftime('%Y-%m-%d %H:%M'),
+            )
+        if reason:
+            body += "<br/><i>Reason:</i> %s" % reason
+        self.dog_id.message_post(body=body, subtype_xmlid='mail.mt_note')
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        for rec in records:
+            rec._log_transition(None, rec.kennel_id, rec.notes)
+        return records
+
+    def write(self, vals):
+        old_data = {}
+        if 'kennel_id' in vals:
+            for rec in self:
+                old_data[rec.id] = rec.kennel_id
+        res = super().write(vals)
+        if 'kennel_id' in vals:
+            for rec in self:
+                old = old_data.get(rec.id)
+                if old != rec.kennel_id:
+                    rec._log_transition(old, rec.kennel_id, rec.notes)
+        return res
+
     @api.depends('start_date', 'end_date')
     def _compute_duration(self):
         for sk in self:

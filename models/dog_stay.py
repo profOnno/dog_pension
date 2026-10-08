@@ -104,13 +104,17 @@ class DogPensionStay(models.Model):
         'kennel_assignment_ids.kennel_id.room_id',
         'kennel_assignment_ids.kennel_id.hallway_id',
     )
+
     def _compute_current_kennel(self):
         now = fields.Datetime.now()
         for stay in self:
-            current = stay.kennel_assignment_ids.filtered(
-                lambda sk: sk.start_date <= now <= sk.end_date
-            )[:1]
-            kennel = current.kennel_id
+            kennel = False
+            if stay.kennel_assignment_ids:
+                current = stay.kennel_assignment_ids.filtered(
+                    lambda sk: sk.start_date <= now <= sk.end_date
+                )[:1]
+                if current:
+                    kennel = current.kennel_id
             stay.current_kennel_id = kennel
             stay.room_id = kennel.room_id if kennel else False
             stay.hallway_id = kennel.hallway_id if kennel else False
@@ -128,12 +132,16 @@ class DogPensionStay(models.Model):
         for stay in self:
             stay.kennel_assignment_count = len(stay.kennel_assignment_ids)
 
-    @api.depends(
-        'kennel_assignment_ids.start_date',
-        'kennel_assignment_ids.end_date',
-        'kennel_assignment_ids.kennel_id',
-        'kennel_assignment_ids.stay_id',
-    )
+    def write(self, vals):
+        res = super().write(vals)
+        if 'end_date' in vals:
+            for stay in self:
+                last_assignment = stay.kennel_assignment_ids.sorted(
+                    key=lambda sk: sk.start_date, reverse=True
+                )[:1]
+                if last_assignment and stay.end_date:
+                    last_assignment.end_date = stay.end_date
+        return res
 
     # ------------------------------------------------------------------
     # Constraints

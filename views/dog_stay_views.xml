@@ -86,7 +86,8 @@
 				    <field name="hallway_id"/>
 				</group>
 			    </group>
-			    <field name="kennel_assignment_ids">
+              <field name="kennel_assignment_ids"
+                     context="{'default_stay_id': id}">
 				<list editable="bottom">
 				    <field name="kennel_id"
 					   domain="[('state', 'in', ('available', 'occupied'))]"/>

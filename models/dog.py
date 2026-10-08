@@ -86,7 +86,7 @@ class DogPensionDog(models.Model):
         'dog.pension.kennel',
         string="Current Kennel",
         compute='_compute_current_location',
-        store=False,
+        store=True,
     )
     current_room_id = fields.Many2one(
         'dog.pension.room',
@@ -103,7 +103,7 @@ class DogPensionDog(models.Model):
     is_boarding = fields.Boolean(
         string="Currently Boarding",
         compute='_compute_current_location',
-        store=False,
+        store=True,
     )
 
     # ------------------------------------------------------------------

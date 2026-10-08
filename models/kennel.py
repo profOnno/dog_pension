@@ -104,21 +104,26 @@ class DogPensionKennel(models.Model):
     # Current occupant (first dog found in the current period)
     # ------------------------------------------------------------------
 
-    current_stay_kennel_id = fields.Many2one(
-        'dog.pension.stay.kennel',
-        string="Current Assignment",
-        compute='_compute_current_assignment',
-        store=False,
-    )
-    current_stay_id = fields.Many2one(
-        'dog.pension.stay',
-        string="Current Stay",
-        compute='_compute_current_assignment',
-        store=False,
-    )
-    current_dog_id = fields.Many2one(
+    current_dog_ids = fields.Many2many(
         'dog.pension.dog',
-        string="Current Dog",
+        'dog_pension_kennel_current_dog_rel',  # relation table
+        'kennel_id',
+        'dog_id',
+        string="Current Dogs",
+        compute='_compute_current_assignment',
+        store=False,
+    )
+    current_dogs_label = fields.Char(
+        string="Current Dog(s)",
+        compute='_compute_current_assignment',
+        store=False,
+    )
+    current_stay_ids = fields.Many2many(
+        'dog.pension.stay',
+        'dog_pension_kennel_current_stay_rel',
+        'kennel_id',
+        'stay_id',
+        string="Current Stays",
         compute='_compute_current_assignment',
         store=False,
     )
@@ -179,10 +184,22 @@ class DogPensionKennel(models.Model):
         for kennel in self:
             current = kennel.stay_kennel_ids.filtered(
                 lambda sk: sk.start_date <= now <= sk.end_date
-            )[:1]
-            kennel.current_stay_kennel_id = current
-            kennel.current_stay_id = current.stay_id
-            kennel.current_dog_id = current.stay_id.dog_id
+            )
+            # Unique dogs (a dog should only appear once)
+            dogs = self.env['dog.pension.dog']
+            stays = self.env['dog.pension.stay']
+            seen_dogs = set()
+            seen_stays = set()
+            for sk in current:
+                if sk.stay_id.dog_id and sk.stay_id.dog_id.id not in seen_dogs:
+                    dogs |= sk.stay_id.dog_id
+                    seen_dogs.add(sk.stay_id.dog_id.id)
+                if sk.stay_id and sk.stay_id.id not in seen_stays:
+                    stays |= sk.stay_id
+                    seen_stays.add(sk.stay_id.id)
+            kennel.current_dog_ids = dogs
+            kennel.current_stay_ids = stays
+            kennel.current_dogs_label = ", ".join(dogs.mapped('name')) or ""
 
     def _compute_stay_kennel_count(self):
         for kennel in self:

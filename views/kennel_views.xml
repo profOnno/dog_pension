@@ -28,7 +28,7 @@
                        decoration-muted="occupancy_state == 'empty'"
                        decoration-info="occupancy_state == 'partial'"
                        decoration-warning="occupancy_state == 'full'"/>
-                <field name="current_dog_id"/>
+                <field name="current_dogs_label" string="Current Dog(s)" optional="show"/>
             </list>
         </field>
     </record>
@@ -83,9 +83,9 @@
                             <field name="active" invisible="1"/>
                         </group>
                     </group>
-                    <group string="Current Occupant">
-                        <field name="current_stay_id"/>
-                        <field name="current_dog_id"/>
+                    <group string="Current Occupants">
+                        <field name="current_dog_ids" widget="many2many_tags"/>
+                        <field name="current_stay_ids" widget="many2many_tags"/>
                     </group>
                     <notebook>
                         <page string="Assignment History">

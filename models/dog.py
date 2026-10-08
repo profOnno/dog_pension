@@ -48,7 +48,7 @@ class DogPensionDog(models.Model):
     vet_phone = fields.Char(string="Veterinarian Phone")
     notes = fields.Text(string="Notes")
     active = fields.Boolean(default=True)
-    color = fields.Integer(string="Color Index")
+    color = fields.Char(string="Color", help="Free text, e.g. 'brown/white', 'golden', 'black with white chest'.")
 
     image_1920 = fields.Image(string="Photo", max_width=1920, max_height=1920)
     image_1024 = fields.Image(

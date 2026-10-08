@@ -124,22 +124,23 @@
             </form>
         </field>
     </record>
+
     <record id="view_dog_pension_dog_photo_fullscreen" model="ir.ui.view">
-      <field name="name">dog.pension.dog.photo.fullscreen</field>
-      <field name="model">dog.pension.dog</field>
-      <field name="arch" type="xml">
-          <form string="Photo" create="false" edit="false">
-              <sheet>
-                  <field name="image_1920" widget="image" readonly="1"
-                        options="{'size': [800, 800], 'zoom': False}"/>
-              </sheet>
-              <footer>
-                  <button string="Close" class="btn-secondary"
-                          special="cancel"/>
-              </footer>
-          </form>
-      </field>
-  </record>
+        <field name="name">dog.pension.dog.photo.fullscreen</field>
+        <field name="model">dog.pension.dog</field>
+        <field name="arch" type="xml">
+            <form string="Photo" create="false" edit="false">
+                <sheet>
+                    <field name="image_1920" widget="image" readonly="1"
+                          options="{'zoom': False}"/>
+                </sheet>
+                <footer>
+                    <button string="Close" class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
 
     <!-- ============================================================= -->
     <!-- SEARCH VIEW                                                    -->

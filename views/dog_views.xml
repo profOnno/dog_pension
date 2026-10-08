@@ -12,9 +12,6 @@
 		<field name="gender"/>
 		<field name="age"/>
 		<field name="weight"/>
-		<field name="current_kennel_id"/>
-		<field name="current_room_id" optional="hide"/>
-		<field name="current_hallway_id" optional="hide"/>
 		<field name="is_boarding" invisible="1"/>
 		<field name="stay_count"/>
 	    </list>

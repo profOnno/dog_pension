@@ -5,13 +5,17 @@
         <field name="name">dog.pension.stay.tree</field>
         <field name="model">dog.pension.stay</field>
         <field name="arch" type="xml">
-            <list string="Dog Stays">
+          <list string="Dog Stays"
+              decoration-success="state == 'in_progress'"
+              decoration-info="state == 'confirmed'"
+              decoration-muted="state in ('done', 'cancelled')">        
                 <field name="name"/>
                 <field name="dog_id"/>
                 <field name="owner_id"/>
                 <field name="start_date"/>
                 <field name="end_date"/>
                 <field name="duration_days"/>
+                <field name="current_kennel_id"/>
                 <field name="state" widget="badge"
                        decoration-info="state == 'draft'"
                        decoration-warning="state == 'confirmed'"

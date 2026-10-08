@@ -131,6 +131,23 @@ class DogPensionDog(models.Model):
             )
             dog.qr_code = self._generate_qr(url)
 
+    def action_show_photo_fullscreen(self):
+        """Open the dog's photo in a full-screen popup."""
+        self.ensure_one()
+        if not self.image_1920:
+            return
+        return {
+            'type': 'ir.actions.act_window',
+            'name': self.name,
+            'res_model': 'dog.pension.dog',
+            'res_id': self.id,
+            'view_mode': 'form',
+            'view_id': self.env.ref(
+                'dog_pension.view_dog_pension_dog_photo_fullscreen'
+            ).id,
+            'target': 'fullscreen',
+        }
+
     @api.model
     def _generate_qr(self, data, size=4):
         """Generate a QR code PNG and return it as base64."""

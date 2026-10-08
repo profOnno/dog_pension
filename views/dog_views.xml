@@ -27,48 +27,6 @@
     </record>
 
     <!-- ============================================================= -->
-    <!-- KANBAN VIEW                                                    -->
-    <!-- ============================================================= -->
-    <record id="view_dog_pension_dog_kanban" model="ir.ui.view">
-        <field name="name">dog.pension.dog.kanban</field>
-        <field name="model">dog.pension.dog</field>
-        <field name="arch" type="xml">
-            <kanban class="o_kanban_mobile">
-                <field name="name"/>
-                <field name="owner_id"/>
-                <field name="breed_id"/>
-                <field name="gender"/>
-                <field name="age"/>
-                <field name="is_boarding"/>
-                <field name="current_kennel_id"/>
-                <templates>
-                    <t t-name="kanban-box">
-                        <div class="oe_kanban_global_click">
-                            <div class="o_kanban_image">
-                                <img t-att-src="kanban_image('dog.pension.dog', 'image_128', record.id.raw_value)"
-                                     alt="Dog"
-                                     class="o_image_64_cover"/>
-                            </div>
-                            <div class="oe_kanban_details">
-                                <strong><field name="name"/></strong>
-                                <div><field name="owner_id"/></div>
-                                <div t-if="record.breed_id.raw_value">
-                                    <field name="breed_id"/>
-                                </div>
-                                <div t-if="record.is_boarding.raw_value"
-                                     class="text-success">
-                                    <i class="fa fa-home"/>
-                                    <field name="current_kennel_id"/>
-                                </div>
-                            </div>
-                        </div>
-                    </t>
-                </templates>
-            </kanban>
-        </field>
-    </record>
-
-    <!-- ============================================================= -->
     <!-- FORM VIEW                                                      -->
     <!-- ============================================================= -->
     <record id="view_dog_pension_dog_form" model="ir.ui.view">
@@ -79,29 +37,51 @@
                 <sheet>
                     <widget name="web_ribbon" title="Archived"
                             bg_color="text-bg-danger" invisible="active"/>
-                    <field name="image_1920" widget="image" class="oe_avatar"
-                           options="{'preview_image': 'image_128', 'zoom': True}"/>
+
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_stays"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-calendar">
+                            <field name="stay_count" widget="statinfo" string="Stays"/>
+                        </button>
+                    </div>
+
+                    <div class="d-flex align-items-start">
+                        <field name="image_1920" widget="image" class="oe_avatar"
+                              options="{'preview_image': 'image_128', 'zoom': True}"/>
+                        <button name="action_show_photo_fullscreen"
+                                type="object"
+                                string="View Photo"
+                                class="btn btn-secondary ms-2"
+                                icon="fa-expand"
+                                invisible="not image_1920"/>
+                    </div>
+
                     <div class="oe_title">
                         <h1><field name="name" placeholder="Dog Name"/></h1>
                     </div>
+
                     <group>
                         <group>
                             <field name="owner_id"/>
                             <field name="breed_id"/>
                             <field name="gender"/>
+                            <field name="color"/>
                             <field name="birth_date"/>
                             <field name="age"/>
                         </group>
                         <group>
                             <field name="weight"/>
                             <field name="is_sterilized"/>
+                            <field name="microchip"/>
                             <field name="vaccination_date"/>
                             <field name="vet_name"/>
                             <field name="vet_phone"/>
                             <field name="active" invisible="1"/>
-                            <field name="color" widget="color_picker"/>
                         </group>
                     </group>
+
                     <group string="Current Location" invisible="not is_boarding">
                         <group>
                             <field name="current_kennel_id"/>
@@ -112,7 +92,14 @@
                             <field name="is_boarding" invisible="1"/>
                         </group>
                     </group>
+
                     <notebook>
+                        <page string="QR Code">
+                            <group>
+                                <field name="qr_code" widget="image"
+                                      options="{'size': [200, 200]}"/>
+                            </group>
+                        </page>
                         <page string="Notes">
                             <field name="notes" placeholder="Additional information..."/>
                         </page>
@@ -124,18 +111,12 @@
                                     <field name="end_date"/>
                                     <field name="duration_days"/>
                                     <field name="state" widget="badge"
-                                           decoration-info="state == 'draft'"
-                                           decoration-success="state in ('confirmed', 'in_progress')"
-                                           decoration-muted="state in ('done', 'cancelled')"/>
+                                          decoration-info="state == 'draft'"
+                                          decoration-success="state in ('confirmed', 'in_progress')"
+                                          decoration-muted="state in ('done', 'cancelled')"/>
                                     <field name="sale_order_id"/>
                                 </list>
                             </field>
-                        </page>
-                        <page string="QR Code">
-                            <group>
-                                <field name="qr_code" widget="image"
-                                      options="{'size': [200, 200]}"/>
-                            </group>
                         </page>
                     </notebook>
                 </sheet>
@@ -143,6 +124,22 @@
             </form>
         </field>
     </record>
+    <record id="view_dog_pension_dog_photo_fullscreen" model="ir.ui.view">
+      <field name="name">dog.pension.dog.photo.fullscreen</field>
+      <field name="model">dog.pension.dog</field>
+      <field name="arch" type="xml">
+          <form string="Photo" create="false" edit="false">
+              <sheet>
+                  <field name="image_1920" widget="image" readonly="1"
+                        options="{'size': [800, 800], 'zoom': False}"/>
+              </sheet>
+              <footer>
+                  <button string="Close" class="btn-secondary"
+                          special="cancel"/>
+              </footer>
+          </form>
+      </field>
+  </record>
 
     <!-- ============================================================= -->
     <!-- SEARCH VIEW                                                    -->

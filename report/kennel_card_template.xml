@@ -71,7 +71,7 @@
                     </div>
                     <div>
                         <strong>Tel:</strong>
-                        <t t-esc="stay.owner_id.phone or stay.owner_id.mobile or '—'"/>
+                        <t t-esc="stay.owner_id.phone or '—'"/>
                     </div>
 
                     <hr/>

@@ -181,3 +181,31 @@ class DogPensionStayKennel(models.Model):
                 raise ValidationError(
                     "The assignment cannot end after the stay ends."
                 )
+
+    @api.constrains('kennel_id', 'start_date', 'end_date')
+    def _check_kennel_state_and_capacity(self):
+        for sk in self:
+            if not (sk.kennel_id and sk.start_date and sk.end_date):
+                continue
+            # 1. Kennel must be available
+            if sk.kennel_id.state in ('maintenance', 'blocked'):
+                raise ValidationError(
+                    "Kennel '%s' is in status '%s' and cannot be assigned."
+                    % (sk.kennel_id.name, sk.kennel_id.state)
+                )
+            # 2. Capacity check
+            overlapping = self.search([
+                ('id', '!=', sk.id),
+                ('kennel_id', '=', sk.kennel_id.id),
+                ('start_date', '<', sk.end_date),
+                ('end_date', '>', sk.start_date),
+            ])
+            dogs = set(o.stay_id.dog_id.id for o in overlapping if o.stay_id.dog_id)
+            if sk.stay_id.dog_id:
+                dogs.add(sk.stay_id.dog_id.id)
+            if len(dogs) > sk.kennel_id.capacity:
+                raise ValidationError(
+                    "Kennel '%s' has capacity %d but %d dogs are assigned "
+                    "during this period."
+                    % (sk.kennel_id.name, sk.kennel_id.capacity, len(dogs))
+                )

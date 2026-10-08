@@ -84,11 +84,84 @@ class DogPensionStayKennel(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        records = super().create(vals_list)
-        for rec in records:
-            rec._log_transition(None, rec.kennel_id, rec.notes)
-        return records
+        for vals in vals_list:
+            stay_id = vals.get('stay_id')
+            kennel_id = vals.get('kennel_id')
+            start_date = vals.get('start_date')
+            end_date = vals.get('end_date')
 
+            if not (stay_id and kennel_id and start_date and end_date):
+                continue
+
+            stay = self.env['dog.pension.stay'].browse(stay_id)
+            kennel = self.env['dog.pension.kennel'].browse(kennel_id)
+
+            # 1. Kennel must be available
+            if kennel.state in ('maintenance', 'blocked'):
+                raise ValidationError(
+                    "Kennel '%s' is in status '%s' and cannot be assigned."
+                    % (kennel.name, kennel.state)
+                )
+
+            # 2. Same dog in another STAY (different stay) → block
+            dog_overlap_other_stay = self.search([
+                ('stay_id.dog_id', '=', stay.dog_id.id),
+                ('stay_id', '!=', stay_id),
+                ('start_date', '<', end_date),
+                ('end_date', '>', start_date),
+            ])
+            if dog_overlap_other_stay:
+                other = dog_overlap_other_stay[0]
+                raise ValidationError(
+                    "Dog '%s' is already in kennel '%s' during this period "
+                    "(%s → %s). A dog cannot be in two kennels at the same time."
+                    % (
+                        stay.dog_id.name,
+                        other.kennel_id.name,
+                        other.start_date.strftime('%Y-%m-%d %H:%M'),
+                        other.end_date.strftime('%Y-%m-%d %H:%M'),
+                    )
+                )
+
+            # 3. Capacity check (excluding same stay, because we'll close those)
+            kennel_overlap = self.search([
+                ('kennel_id', '=', kennel.id),
+                ('stay_id', '!=', stay_id),
+                ('start_date', '<', end_date),
+                ('end_date', '>', start_date),
+            ])
+            dogs = set()
+            for o in kennel_overlap:
+                if o.stay_id.dog_id:
+                    dogs.add(o.stay_id.dog_id.id)
+            if stay.dog_id:
+                dogs.add(stay.dog_id.id)
+            if len(dogs) > kennel.capacity:
+                raise ValidationError(
+                    "Kennel '%s' has capacity %d, but %d dogs would be "
+                    "assigned during this period."
+                    % (kennel.name, kennel.capacity, len(dogs))
+                )
+
+        # Create the records
+        records = super().create(vals_list)
+
+        # Close overlapping assignments within the SAME stay
+        for rec in records:
+            overlapping = self.search([
+                ('id', '!=', rec.id),
+                ('stay_id', '=', rec.stay_id.id),
+                ('start_date', '<', rec.start_date),
+                ('end_date', '>', rec.start_date),
+            ])
+            for old in overlapping:
+                old.end_date = rec.start_date
+            rec._log_transition(
+                old_kennel=overlapping[:1].kennel_id,
+                new_kennel=rec.kennel_id,
+                reason=rec.notes,
+            )
+        return records
     def write(self, vals):
         old_data = {}
         if 'kennel_id' in vals:
@@ -151,20 +224,61 @@ class DogPensionStayKennel(models.Model):
                     "the start date."
                 )
 
-    @api.constrains('kennel_id', 'start_date', 'end_date')
-    def _check_kennel_availability(self):
+    @api.constrains('stay_id', 'kennel_id', 'start_date', 'end_date')
+    def _check_no_double_assignment(self):
+        """A dog cannot be in two kennels at the same time."""
         for sk in self:
+            if not (sk.stay_id and sk.kennel_id and sk.start_date and sk.end_date):
+                continue
+            # Same dog, any stay, overlapping period
+            overlapping = self.search([
+                ('id', '!=', sk.id),
+                ('stay_id.dog_id', '=', sk.stay_id.dog_id.id),
+                ('start_date', '<', sk.end_date),
+                ('end_date', '>', sk.start_date),
+            ])
+            if overlapping:
+                other = overlapping[0]
+                raise ValidationError(
+                    "Dog '%s' is already in kennel '%s' during this period "
+                    "(%s → %s). A dog cannot be in two kennels at the same time."
+                    % (
+                        sk.stay_id.dog_id.name,
+                        other.kennel_id.name,
+                        other.start_date.strftime('%Y-%m-%d %H:%M'),
+                        other.end_date.strftime('%Y-%m-%d %H:%M'),
+                    )
+                )
+    @api.constrains('kennel_id', 'start_date', 'end_date')
+    def _check_kennel_capacity(self):
+        """A kennel cannot host more than its capacity at the same time."""
+        for sk in self:
+            if not (sk.kennel_id and sk.start_date and sk.end_date):
+                continue
+            if sk.kennel_id.state in ('maintenance', 'blocked'):
+                raise ValidationError(
+                    "Kennel '%s' is in status '%s' and cannot be assigned."
+                    % (sk.kennel_id.name, sk.kennel_id.state)
+                )
+            # Find all overlapping assignments for this kennel
             overlapping = self.search([
                 ('id', '!=', sk.id),
                 ('kennel_id', '=', sk.kennel_id.id),
                 ('start_date', '<', sk.end_date),
                 ('end_date', '>', sk.start_date),
             ])
-            if overlapping:
+            # Count unique dogs (the new one + those already there)
+            dogs = set()
+            for o in overlapping:
+                if o.stay_id.dog_id:
+                    dogs.add(o.stay_id.dog_id.id)
+            if sk.stay_id.dog_id:
+                dogs.add(sk.stay_id.dog_id.id)
+            if len(dogs) > sk.kennel_id.capacity:
                 raise ValidationError(
-                    "Kennel '%s' is already assigned during this period "
-                    "(conflicting assignment for dog '%s')."
-                    % (sk.kennel_id.name, overlapping[0].dog_id.name or '?')
+                    "Kennel '%s' has capacity %d, but %d dogs would be "
+                    "assigned during this period."
+                    % (sk.kennel_id.name, sk.kennel_id.capacity, len(dogs))
                 )
 
     @api.constrains('stay_id', 'start_date', 'end_date')

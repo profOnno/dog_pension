@@ -66,18 +66,6 @@ class DogPensionStayKennel(models.Model):
         readonly=True,
     )
 
-    @api.model
-    def default_get(self, fields_list):
-        res = super().default_get(fields_list)
-        stay_id = self.env.context.get('default_stay_id')
-        if stay_id:
-            stay = self.env['dog.pension.stay'].browse(stay_id)
-            now = fields.Datetime.now()
-            res['start_date'] = now
-            if stay.end_date:
-                res['end_date'] = stay.end_date
-        return res
-
     def _log_transition(self, old_kennel, new_kennel, reason=None):
         self.ensure_one()
         if not self.dog_id or old_kennel == new_kennel:

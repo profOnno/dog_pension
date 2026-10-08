@@ -36,33 +36,24 @@
             <form string="Dog">
                 <sheet>
                     <widget name="web_ribbon" title="Archived"
-                            bg_color="text-bg-danger" invisible="active"/>
+                        bg_color="text-bg-danger" invisible="active"/>
 
-                    <div class="oe_button_box" name="button_box">
-                        <button name="action_view_stays"
-                                type="object"
-                                class="oe_stat_button"
-                                icon="fa-calendar">
-                            <field name="stay_count" widget="statinfo" string="Stays"/>
-                        </button>
-                    </div>
-
-                    <div class="d-flex align-items-start">
-                        <field name="image_1920" widget="image" class="oe_avatar"
-                              options="{'preview_image': 'image_128', 'zoom': True}"/>
-                        <button name="action_show_photo_fullscreen"
-                                type="object"
-                                string="View Photo"
-                                class="btn btn-secondary ms-2"
-                                icon="fa-expand"
-                                invisible="not image_1920"/>
-                    </div>
-
-                    <div class="oe_title">
-                        <h1><field name="name" placeholder="Dog Name"/></h1>
-                    </div>
-
-                    <group>
+                        <div class="d-flex flex-column flex-md-row align-items-start justify-content-md-between">
+                            <div class="oe_title flex-grow-1">
+                                <h1><field name="name" placeholder="Dog Name"/></h1>
+                            </div>
+                            <div class="d-flex align-items-start mt-2 mt-md-0 ms-md-3">
+                                <field name="image_1920" widget="image" class="oe_avatar"
+                                      options="{'preview_image': 'image_128', 'zoom': True}"/>
+                                <button name="action_show_photo_fullscreen"
+                                        type="object"
+                                        class="btn btn-link p-0 ms-1"
+                                        icon="fa-expand"
+                                        title="View Photo"
+                                        aria-label="View Photo"
+                                        invisible="not image_1920"/>
+                            </div>
+                        </div>
                         <group>
                             <field name="owner_id"/>
                             <field name="breed_id"/>

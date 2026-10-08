@@ -12,7 +12,7 @@
                   decoration-success="is_boarding"
                   decoration-muted="not is_boarding and not active">
                 <field name="image_1920" widget="image"
-                       options="{'zoom': True, 'preview_image':'image_128', size': [40, 40]}"/>
+                       options="{'zoom': True, 'preview_image':'image_128', 'size': [40, 40]}"/>
                 <field name="name"/>
                 <field name="owner_id"/>
                 <field name="breed_id"/>

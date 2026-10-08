@@ -46,7 +46,7 @@
                                            decoration-success="state == 'available'"
                                            decoration-danger="state == 'occupied'"
                                            decoration-warning="state in ('maintenance', 'blocked')"/>
-                                    <field name="current_dog_id"/>
+                                    <field name="current_dogs_label" string="Current Dog(s)"/>
                                 </list>
                             </field>
                         </page>

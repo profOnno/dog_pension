@@ -103,7 +103,17 @@ class DogPensionStayKennel(models.Model):
                     % (kennel.name, kennel.state)
                 )
 
-            # 2. Same dog in another STAY (different stay) → block
+            # 2. FIRST: close any overlapping assignment in the SAME stay
+            #    This must happen BEFORE validation, so a move is not blocked.
+            overlapping_same_stay = self.search([
+                ('stay_id', '=', stay_id),
+                ('start_date', '<', start_date),
+                ('end_date', '>', start_date),
+            ])
+            for old in overlapping_same_stay:
+                old.end_date = start_date
+
+            # 3. THEN: validate against OTHER stays (not the same one)
             dog_overlap_other_stay = self.search([
                 ('stay_id.dog_id', '=', stay.dog_id.id),
                 ('stay_id', '!=', stay_id),
@@ -123,7 +133,7 @@ class DogPensionStayKennel(models.Model):
                     )
                 )
 
-            # 3. Capacity check (excluding same stay, because we'll close those)
+            # 4. Capacity check (excluding the same stay)
             kennel_overlap = self.search([
                 ('kennel_id', '=', kennel.id),
                 ('stay_id', '!=', stay_id),
@@ -143,26 +153,33 @@ class DogPensionStayKennel(models.Model):
                     % (kennel.name, kennel.capacity, len(dogs))
                 )
 
-        # Create the records
+        # 5. Create the new records
         records = super().create(vals_list)
 
-        # Close overlapping assignments within the SAME stay
+        # 6. Log the transitions on the dog's chatter
         for rec in records:
-            overlapping = self.search([
-                ('id', '!=', rec.id),
+            # Find the assignment we just closed
+            previous = self.search([
                 ('stay_id', '=', rec.stay_id.id),
-                ('start_date', '<', rec.start_date),
-                ('end_date', '>', rec.start_date),
-            ])
-            for old in overlapping:
-                old.end_date = rec.start_date
-            rec._log_transition(
-                old_kennel=overlapping[:1].kennel_id,
-                new_kennel=rec.kennel_id,
-                reason=rec.notes,
-            )
+                ('end_date', '=', rec.start_date),
+                ('id', '!=', rec.id),
+            ], limit=1, order='end_date desc')
+            if previous:
+                rec._log_transition(
+                    old_kennel=previous.kennel_id,
+                    new_kennel=rec.kennel_id,
+                    reason=rec.notes,
+                )
+            else:
+                rec._log_transition(
+                    old_kennel=None,
+                    new_kennel=rec.kennel_id,
+                    reason=rec.notes,
+                )
+
         return records
-    def write(self, vals):
+
+   def write(self, vals):
         old_data = {}
         if 'kennel_id' in vals:
             for rec in self:

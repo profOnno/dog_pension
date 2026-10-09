@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="report_kennel_qr_label">
+        <t t-call="web.html_container">
+            <style>
+                .kennel-label {
+                    font-family: 'DejaVu Sans', Arial, Helvetica, sans-serif;
+                    color: #000;
+                    text-align: center;
+                    padding: 2mm;
+                    box-sizing: border-box;
+                }
+                .kennel-label .label-name {
+                    font-size: 85pt;
+                    font-weight: bold;
+                    line-height: 1;
+                    margin-bottom: 8mm;
+                }
+                .kennel-label .qr {
+                    width: 60mm;
+                    height: 60mm;
+                }
+            </style>
+            <t t-foreach="docs" t-as="kennel">
+                <div class="kennel-label" style="page-break-after: always;">
+                    <div class="label-name">
+                        <t t-esc="kennel.name"/>
+                    </div>
+                    <img t-if="kennel.qr_code"
+                         t-att-src="image_data_uri(kennel.qr_code)"
+                         class="qr"/>
+                </div>
+            </t>
+        </t>
+    </template>
+
+</odoo>

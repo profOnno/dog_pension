@@ -89,7 +89,7 @@
                         </group>
                     </group>
                     <group string="Current Occupants">
-                        <field name="current_dogs_ids" widget="many2many_tags"/>
+                        <field name="current_dog_ids" widget="many2many_tags"/>
                     </group>
                     <notebook>
                         <page string="QR Code">

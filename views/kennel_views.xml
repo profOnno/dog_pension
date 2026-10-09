@@ -28,7 +28,7 @@
                        decoration-muted="occupancy_state == 'empty'"
                        decoration-info="occupancy_state == 'partial'"
                        decoration-warning="occupancy_state == 'full'"/>
-                <field name="current_dogs_label" string="Current Dog(s)" optional="show"/>
+                <field name="current_dogs_label" string="Current Dog(s)"/>
             </list>
         </field>
     </record>
@@ -55,6 +55,11 @@
                             type="object"
                             string="Block"
                             invisible="state == 'blocked'"/>
+                    <button name="%(action_report_kennel_qr_label)d"
+                            type="action"
+                            string="Print QR Label"
+                            class="btn-secondary"
+                            icon="fa-print"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="available,maintenance,blocked"/>
                 </header>
@@ -84,10 +89,15 @@
                         </group>
                     </group>
                     <group string="Current Occupants">
-                        <field name="current_dog_ids" widget="many2many_tags"/>
-                        <field name="current_stay_ids" widget="many2many_tags"/>
+                        <field name="current_dogs_label"/>
                     </group>
                     <notebook>
+                        <page string="QR Code">
+                            <group>
+                                <field name="qr_code" widget="image"
+                                       options="{'size': [200, 200]}"/>
+                            </group>
+                        </page>
                         <page string="Assignment History">
                             <field name="stay_kennel_ids" readonly="1">
                                 <list>
@@ -101,12 +111,6 @@
                         </page>
                         <page string="Notes">
                             <field name="notes"/>
-                        </page>
-                        <page string="QR Code">
-                            <group>
-                                <field name="qr_code" widget="image"
-                                      options="{'size': [200, 200]}"/>
-                            </group>
                         </page>
                     </notebook>
                 </sheet>

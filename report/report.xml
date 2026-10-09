@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- Kennel Card report (per stay) -->
     <record id="action_report_kennel_card" model="ir.actions.report">
         <field name="name">Kennel Card</field>
         <field name="model">dog.pension.stay</field>
@@ -10,6 +11,19 @@
         <field name="print_report_name">'KennelCard-%s' % (object.dog_id.name or object.name)</field>
         <field name="paperformat_id" ref="paperformat_kennel_card"/>
         <field name="binding_model_id" ref="model_dog_pension_stay"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Kennel QR Label report (per kennel) -->
+    <record id="action_report_kennel_qr_label" model="ir.actions.report">
+        <field name="name">Kennel QR Label</field>
+        <field name="model">dog.pension.kennel</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">dog_pension.report_kennel_qr_label</field>
+        <field name="report_file">dog_pension.report_kennel_qr_label</field>
+        <field name="print_report_name">'KennelLabel-%s' % (object.name or 'unknown')</field>
+        <field name="paperformat_id" ref="paperformat_kennel_label"/>
+        <field name="binding_model_id" ref="model_dog_pension_kennel"/>
         <field name="binding_type">report</field>
     </record>
 

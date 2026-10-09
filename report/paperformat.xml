@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
     <record id="paperformat_kennel_card" model="report.paperformat">
         <field name="name">Kennel Card A6</field>
         <field name="default" eval="False"/>
@@ -14,5 +13,17 @@
         <field name="header_spacing">0</field>
         <field name="dpi">90</field>
     </record>
-
+    <record id="paperformat_kennel_label" model="report.paperformat">
+        <field name="name">Kennel QR Label A6</field>
+        <field name="default" eval="False"/>
+        <field name="format">A6</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">3</field>
+        <field name="margin_bottom">3</field>
+        <field name="margin_left">3</field>
+        <field name="margin_right">3</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">90</field>
+    </record>
 </odoo>

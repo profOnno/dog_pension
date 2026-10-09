@@ -20,6 +20,7 @@
         'wizard/dog_quick_create_views.xml',
         'report/paperformat.xml',
         'report/kennel_card_template.xml',
+        'report/kennel_card_template.xml',
         'report/report.xml',                # ← report action defined here
         'views/room_views.xml',
         'views/hallway_views.xml',

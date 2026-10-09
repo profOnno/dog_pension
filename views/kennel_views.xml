@@ -89,7 +89,7 @@
                         </group>
                     </group>
                     <group string="Current Occupants">
-                        <field name="current_dogs_label"/>
+                        <field name="current_dogs_ids" widget="many2many_tags"/>
                     </group>
                     <notebook>
                         <page string="QR Code">
@@ -99,16 +99,17 @@
                             </group>
                         </page>
                         <page string="Assignment History">
-                            <field name="stay_kennel_ids" readonly="1">
-                                <list>
-                                    <field name="stay_id"/>
-                                    <field name="dog_id"/>
-                                    <field name="start_date"/>
-                                    <field name="end_date"/>
-                                    <field name="duration_days"/>
-                                </list>
-                            </field>
-                        </page>
+                          <field name="stay_kennel_ids" readonly="1" create="false" edit="false">
+                            <list create="false" edit="false" delete="false"
+                              open_form_view="false">
+                              <field name="stay_id"/>
+                              <field name="dog_id"/>
+                              <field name="start_date"/>
+                              <field name="end_date"/>
+                              <field name="duration_days"/>
+                            </list>
+                          </field>
+                        </page> 
                         <page string="Notes">
                             <field name="notes"/>
                         </page>

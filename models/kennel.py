@@ -129,6 +129,12 @@ class DogPensionKennel(models.Model):
         compute='_compute_current_assignment',
         store=False,
     )
+    current_dogs_html = fields.Html(
+        string="Current Dogs",
+        compute='_compute_current_assignment',
+        store=False,
+        sanitize=False,
+    )
     current_stay_ids = fields.Many2many(
         'dog.pension.stay',
         'dog_pension_kennel_current_stay_rel',
@@ -239,6 +245,10 @@ class DogPensionKennel(models.Model):
             kennel.current_dog_ids = dogs
             kennel.current_stay_ids = stays
             kennel.current_dogs_label = ", ".join(dogs.mapped('name')) or ""
+            kennel.current_dogs_html = " ".join(
+                '<a href="/odoo/dog.pension.dog/%s">%s</a>' % (dog.id, dog.name)
+                for dog in dogs
+            )
 
     def _compute_stay_kennel_count(self):
         for kennel in self:

@@ -2,6 +2,7 @@ from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 import base64
 from io import BytesIO
+from markupsafe import Markup, escape
 
 import qrcode
 
@@ -133,7 +134,7 @@ class DogPensionKennel(models.Model):
         string="Current Dogs",
         compute='_compute_current_assignment',
         store=False,
-        sanitize=False,
+        sanitize=True,
     )
     current_stay_ids = fields.Many2many(
         'dog.pension.stay',
@@ -245,8 +246,8 @@ class DogPensionKennel(models.Model):
             kennel.current_dog_ids = dogs
             kennel.current_stay_ids = stays
             kennel.current_dogs_label = ", ".join(dogs.mapped('name')) or ""
-            kennel.current_dogs_html = " ".join(
-                '<a href="/odoo/dog.pension.dog/%s">%s</a>' % (dog.id, dog.name)
+            kennel.current_dogs_html = Markup(" ").join(
+                Markup('<a href="/odoo/dog.pension.dog/%s">%s</a>') % (dog.id, escape(dog.name))
                 for dog in dogs
             )
 

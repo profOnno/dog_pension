@@ -122,7 +122,7 @@ class DogPensionKennel(models.Model):
         'dog_id',
         string="Current Dogs",
         compute='_compute_current_assignment',
-        store=False,
+        store=True,
     )
     current_dogs_label = fields.Char(
         string="Current Dog(s)",
@@ -136,7 +136,7 @@ class DogPensionKennel(models.Model):
         'stay_id',
         string="Current Stays",
         compute='_compute_current_assignment',
-        store=False,
+        store=True,
     )
 
     # ------------------------------------------------------------------

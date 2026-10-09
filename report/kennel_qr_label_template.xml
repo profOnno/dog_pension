@@ -12,14 +12,14 @@
                     box-sizing: border-box;
                 }
                 .kennel-label .label-name {
-                    font-size: 85pt;
+                    font-size: 90pt;
                     font-weight: bold;
                     line-height: 1;
                     margin-bottom: 8mm;
                 }
                 .kennel-label .qr {
-                    width: 60mm;
-                    height: 60mm;
+                    width: 30mm;
+                    height: 30mm;
                 }
             </style>
             <t t-foreach="docs" t-as="kennel">
